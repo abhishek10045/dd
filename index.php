@@ -12,8 +12,8 @@
         die("connection failed");
     }
 
-    function test_input($data, $db_conn) {
-        $data = mysqli_real_escape_string($db_conn, $data);
+    function test_input($data, $conn) {
+        $data = mysqli_real_escape_string($conn, $data);
         $data = trim($data);
         $data = stripslashes($data);
         $data = htmlspecialchars($data);
@@ -62,15 +62,14 @@
 
         if (!$err)  {
             $query = "SELECT id FROM users WHERE email = '" . $email . "'";
+            echo $query;
             $result = mysqli_query($conn, $query);
-            if ($result) {
+            if (mysqli_num_rows($result) > 0) {
                 $row = mysqli_fetch_assoc($result);
                 $id = $row["id"];
                 foreach ($events as $event) {
                     $query = "INSERT INTO " . $event . " (id) VALUES ('" . $id . "')";
-                    if (!mysqli_query($conn, $query)) {
-                        $err = "Event not added";
-                    }
+                    mysqli_query($conn, $query);
                 }
                 mail($email, SUBJECT, MESSAGE);
             } else {
@@ -78,21 +77,15 @@
                 if (mysqli_query($conn, $query)) {
                     $query = "SELECT id FROM users WHERE email = '" . $email . "'";
                     $result = mysqli_query($conn, $query);
-                    if ($result) {
+                    if (mysqli_num_rows($result) > 0) {
                         $row = mysqli_fetch_assoc($result);
                         $id = $row["id"];
                         foreach ($events as $event) {
                             $query = "INSERT INTO " . $event . " (id) VALUES ('" . $id . "')";
-                            if (!mysqli_query($conn, $query)) {
-                                $err = "Event not added";
-                            }
+                            mysqli_query($conn, $query);
                         }
                         mail($email, SUBJECT, MESSAGE);
-                    } else {
-                        $err = "Record not added";
                     }
-                } else {
-                    $err = "Record not added";
                 }
             }
         }
