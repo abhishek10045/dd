@@ -61,10 +61,18 @@
         }
 
         if (!$err)  {
-            $query = "SELECT name FROM users WHERE email = '" . $email . "'";
+            $query = "SELECT id FROM users WHERE email = '" . $email . "'";
             $result = mysqli_query($conn, $query);
-            if (mysqli_num_rows($result) > 0) {
-                $err = "Already registered"; 
+            if ($result) {
+                $row = mysqli_fetch_assoc($result);
+                $id = $row["id"];
+                foreach ($events as $event) {
+                    $query = "INSERT INTO " . $event . " (id) VALUES ('" . $id . "')";
+                    if (!mysqli_query($conn, $query)) {
+                        $err = "Event not added";
+                    }
+                }
+                mail($email, SUBJECT, MESSAGE);
             } else {
                 $query = "INSERT INTO users (name, email, college, gender) VALUES ('" . $name . "', '" . $email . "', '" . $college . "', '" . $gender . "')";
                 if (mysqli_query($conn, $query)) {
