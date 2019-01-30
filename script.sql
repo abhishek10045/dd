@@ -8,6 +8,7 @@ CREATE TABLE users (
     email VARCHAR(200) UNIQUE NOT NULL,
     college VARCHAR(200) NOT NULL,
     gender VARCHAR(10) NOT NULL,
+    contact VARCHAR(20) NOT NULL, 
     PRIMARY KEY(id)
 );
 

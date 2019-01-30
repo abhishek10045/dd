@@ -20,7 +20,7 @@
         return $data;
     }
 
-    $name = $email = $college = $gender = $err = "";
+    $name = $email = $college = $gender = $contact = $err = "";
     $events = array();
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -40,6 +40,12 @@
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $err = "Invalid email format\n"; 
             }
+        }
+
+        if (empty($_POST["contact"])) {
+            $err .= "Contact Number is required";
+        } else {
+            $contact = test_input($_POST["contact"], $conn);
         }
 
         if (empty($_POST["college"])) {
@@ -62,7 +68,6 @@
 
         if (!$err)  {
             $query = "SELECT id FROM users WHERE email = '" . $email . "'";
-            echo $query;
             $result = mysqli_query($conn, $query);
             if (mysqli_num_rows($result) > 0) {
                 $row = mysqli_fetch_assoc($result);
@@ -73,7 +78,7 @@
                 }
                 mail($email, SUBJECT, MESSAGE);
             } else {
-                $query = "INSERT INTO users (name, email, college, gender) VALUES ('" . $name . "', '" . $email . "', '" . $college . "', '" . $gender . "')";
+                $query = "INSERT INTO users (name, email, college, gender, contact) VALUES ('" . $name . "', '" . $email . "', '" . $college . "', '" . $gender . "', '" . $contact . "')";
                 if (mysqli_query($conn, $query)) {
                     $query = "SELECT id FROM users WHERE email = '" . $email . "'";
                     $result = mysqli_query($conn, $query);
@@ -108,6 +113,8 @@
         Name: <input type="text" name="name" value="">
         <br><br>
         E-mail: <input type="text" name="email" value="">
+        <br><br>
+        Contact No.: <input type="text" name="contact" value="">
         <br><br>
         College: <input type="text" name="college" value="">
         <br><br>
